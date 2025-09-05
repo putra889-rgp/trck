@@ -2,73 +2,221 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Login System + Tools</title>
+  <title>Login Panel</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#0d1117; color:#c9d1d9; padding:20px; }
-    h1,h2 { color:#00ffcc; }
-    .box { background:#161b22; padding:15px; border-radius:10px; margin:15px 0; }
-    input,button,select { padding:10px; border-radius:8px; border:none; margin:5px 0; }
-    button { background:#00ffcc; color:#111; cursor:pointer; font-weight:bold; }
-    pre { background:#111; padding:10px; border-radius:8px; white-space:pre-wrap; }
-    .hidden { display:none; }
+    body { font-family: Arial, sans-serif; background:#111; color:#eee; text-align:center; }
+    .hidden { display: none; }
+    .box { background:#222; padding:20px; margin:20px auto; border-radius:10px; width:340px; }
+    button { padding:8px 14px; margin:5px; border:none; border-radius:6px; background:#28a745; color:white; cursor:pointer; }
+    button:hover { background:#218838; }
+    input, textarea { margin:5px; padding:6px; width:90%; border-radius:6px; border:1px solid #555; background:#333; color:white; }
+    textarea { height:100px; }
+    pre { text-align:left; background:#111; padding:8px; border-radius:6px; }
   </style>
 </head>
 <body>
-  <h1>🔐 Login System</h1>
+  <h2>🔑 Login Panel</h2>
 
-  <!-- Login -->
-  <div id="loginBox" class="box">
-    <h2>Login</h2>
-    <select id="loginType">
-      <option value="owner">Owner</option>
-      <option value="member">Member</option>
-    </select><br>
-    <input type="password" id="loginInput" placeholder="Password / Token"><br>
-    <button onclick="login()">Login</button>
+  <!-- Menu awal -->
+  <div id="menuAwal" class="box">
+    <p>Pilih jenis login:</p>
+    <button onclick="showOwnerLogin()">Login Owner</button>
+    <button onclick="showMemberLogin()">Login Member</button>
   </div>
 
-  <!-- Owner Dashboard -->
-  <div id="ownerBox" class="box hidden">
-    <h2>Owner Dashboard</h2>
-    <button onclick="logout()">Logout</button>
-    <h3>Generate Token Member</h3>
+  <!-- Form Login Owner -->
+  <div id="loginOwner" class="box hidden">
+    <h3>Login Owner</h3>
+    <input type="text" id="ownerUser" placeholder="Username">
+    <input type="password" id="ownerPass" placeholder="Password">
+    <button onclick="loginOwner()">Login</button>
+    <button onclick="backToMenu()">Kembali</button>
+  </div>
+
+  <!-- Form Login Member -->
+  <div id="loginMember" class="box hidden">
+    <h3>Login Member</h3>
+    <input type="text" id="memberUser" placeholder="Username">
+    <input type="text" id="memberToken" placeholder="Token">
+    <button onclick="loginMember()">Login</button>
+    <button onclick="backToMenu()">Kembali</button>
+  </div>
+
+  <!-- Dashboard Owner -->
+  <div id="dashboardOwner" class="box hidden">
+    <h3>👑 Owner Dashboard</h3>
     <button onclick="generateToken()">Generate Token</button>
-    <pre id="tokenList">Belum ada token...</pre>
-
-    <h3>Fitur</h3>
-    <button onclick="showSection('lookupnik')">Lookup NIK</button>
-    <button onclick="showSection('cekno')">Cek Nomor</button>
-    <button onclick="showSection('tracker')">Tracker Link Generator</button>
+    <div id="tokenBox"></div>
+    <button onclick="showLookupNIK()">Lookup NIK</button>
+    <button onclick="showCekNo()">Cek Nomor</button>
+    <button onclick="showTracker()">Tracker Link Generator</button>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <!-- Member Dashboard -->
-  <div id="memberBox" class="box hidden">
-    <h2>Member Dashboard</h2>
+  <!-- Dashboard Member -->
+  <div id="dashboardMember" class="box hidden">
+    <h3>🙍 Member Dashboard</h3>
+    <button onclick="showLookupNIK()">Lookup NIK</button>
+    <button onclick="showCekNo()">Cek Nomor</button>
+    <button onclick="showTracker()">Tracker Link Generator</button>
     <button onclick="logout()">Logout</button>
-
-    <h3>Fitur</h3>
-    <button onclick="showSection('lookupnik')">Lookup NIK</button>
-    <button onclick="showSection('cekno')">Cek Nomor</button>
-    <button onclick="showSection('tracker')">Tracker Link Generator</button>
   </div>
 
   <!-- Lookup NIK -->
-  <div id="lookupnik" class="box hidden">
-    <h3>Lookup NIK</h3>
-    <input type="text" id="nikInput" placeholder="Masukkan NIK 16 digit">
-    <button onclick="lookupNik()">Cari</button>
+  <div id="lookupNIK" class="box hidden">
+    <h3>🔎 Lookup NIK</h3>
+    <input type="text" id="nikInput" placeholder="Masukkan NIK (16 digit)">
+    <button onclick="lookupNIK()">Cari</button>
     <pre id="nikResult"></pre>
+    <button onclick="backDashboard()">Kembali</button>
   </div>
 
   <!-- Cek Nomor -->
-  <div id="cekno" class="box hidden">
-    <h3>Cek Nomor HP</h3>
+  <div id="cekNo" class="box hidden">
+    <h3>📱 Cek Nomor</h3>
     <input type="text" id="noInput" placeholder="Masukkan Nomor HP">
     <button onclick="cekNomor()">Cek</button>
     <pre id="noResult"></pre>
+    <button onclick="backDashboard()">Kembali</button>
   </div>
 
-  <!-- Tracker -->
+  <!-- Tracker Generator -->
+  <div id="tracker" class="box hidden">
+    <h3>🌐 Tracker Link Generator</h3>
+    <input type="text" id="redirectUrl" placeholder="Masukkan link tujuan (https://...)">
+    <button onclick="makeTrackerLink()">Buat Link Tracker</button>
+    <textarea id="trackerLink" readonly></textarea>
+    <h4>Log Pengunjung:</h4>
+    <pre id="trackerLog"></pre>
+    <button onclick="backDashboard()">Kembali</button>
+  </div>
+
+<script>
+  let currentUser = null;
+  let validToken = null;
+  let visitorLogs = [];
+
+  // ==== LOGIN SYSTEM ====
+  function showOwnerLogin(){ hideAll(); document.getElementById("loginOwner").classList.remove("hidden"); }
+  function showMemberLogin(){ hideAll(); document.getElementById("loginMember").classList.remove("hidden"); }
+  function backToMenu(){ hideAll(); document.getElementById("menuAwal").classList.remove("hidden"); }
+
+  function loginOwner(){
+    const user = document.getElementById("ownerUser").value;
+    const pass = document.getElementById("ownerPass").value;
+    if(user === "owner" && pass === "1234"){
+      currentUser = "owner";
+      hideAll();
+      document.getElementById("dashboardOwner").classList.remove("hidden");
+    } else { alert("Login Owner gagal!"); }
+  }
+
+  function loginMember(){
+    const token = document.getElementById("memberToken").value;
+    if(token && token === validToken){
+      currentUser = "member";
+      hideAll();
+      document.getElementById("dashboardMember").classList.remove("hidden");
+    } else { alert("Token salah atau belum dibuat!"); }
+  }
+
+  function logout(){
+    currentUser = null;
+    hideAll();
+    document.getElementById("menuAwal").classList.remove("hidden");
+  }
+
+  function generateToken(){
+    validToken = Math.random().toString(36).substring(2,10).toUpperCase();
+    document.getElementById("tokenBox").innerHTML = "<b>Token Member:</b> " + validToken;
+  }
+
+  // ==== DASHBOARD ====
+  function showLookupNIK(){ hideAll(); document.getElementById("lookupNIK").classList.remove("hidden"); }
+  function showCekNo(){ hideAll(); document.getElementById("cekNo").classList.remove("hidden"); }
+  function showTracker(){
+    hideAll(); 
+    document.getElementById("tracker").classList.remove("hidden"); 
+    updateLog();
+  }
+
+  function backDashboard(){
+    hideAll();
+    if(currentUser === "owner"){ document.getElementById("dashboardOwner").classList.remove("hidden"); }
+    else if(currentUser === "member"){ document.getElementById("dashboardMember").classList.remove("hidden"); }
+  }
+
+  function hideAll(){ document.querySelectorAll(".box").forEach(b=>b.classList.add("hidden")); }
+
+  // ==== LOOKUP NIK ====
+  function lookupNIK(){
+    const nik = document.getElementById("nikInput").value;
+    if(!/^\d{16}$/.test(nik)){ alert("NIK harus 16 digit angka!"); return; }
+    const tgl = nik.substring(6,8);
+    const bln = nik.substring(8,10);
+    const thn = nik.substring(10,12);
+    let gender = "Laki-Laki"; let tanggal = parseInt(tgl);
+    if(tanggal>40){ gender="Perempuan"; tanggal -= 40; }
+    const tahun = "19"+thn; // asumsi 1900-an
+    const kota = nik.substring(0,4);
+    document.getElementById("nikResult").innerText =
+      "Tanggal Lahir: "+tanggal+"/"+bln+"/"+tahun+
+      "\nJenis Kelamin: "+gender+
+      "\nKode Kota: "+kota;
+  }
+
+  // ==== CEK NOMOR ====
+  const providerMap = {
+    "0811":"Telkomsel","0812":"Telkomsel","0857":"Indosat","0856":"Indosat","0838":"Axis","0896":"Tri","0881":"Smartfren"
+  };
+  function cekNomor(){
+    const no = document.getElementById("noInput").value;
+    const prefix = no.substring(0,4);
+    let provider = providerMap[prefix] || "Tidak diketahui";
+    let aktif = (parseInt(no.slice(-1)) % 2 === 0) ? "Aktif" : "Tidak Aktif";
+    document.getElementById("noResult").innerText =
+      "Provider: "+provider+"\nStatus: "+aktif;
+  }
+
+  // ==== TRACKER LINK ====
+  function makeTrackerLink(){
+    const redirectUrl = document.getElementById("redirectUrl").value;
+    if(!redirectUrl.startsWith("http")){ alert("Link tujuan harus diawali http atau https"); return; }
+    const link = window.location.origin + window.location.pathname + "?track=" + Date.now() + "&to=" + encodeURIComponent(redirectUrl);
+    document.getElementById("trackerLink").value = link;
+  }
+
+  function updateLog(){
+    let logText = visitorLogs.map(v => 
+      `Time: ${v.time}
+UA: ${v.ua}
+Platform: ${v.platform}
+Screen: ${v.screen}
+Redirected to: ${v.redirect}
+-------------------------`).join("\n");
+    document.getElementById("trackerLog").innerText = logText || "Belum ada pengunjung.";
+  }
+
+  // ==== TRACKER MODE ====
+  function collectVisitor(){
+    const url = new URL(window.location.href);
+    if(url.searchParams.has("track")){
+      const redirect = url.searchParams.get("to") || "https://example.com";
+      const v = {
+        time: new Date().toLocaleString(),
+        ua: navigator.userAgent,
+        platform: navigator.platform,
+        screen: screen.width+"x"+screen.height,
+        redirect: redirect
+      };
+      visitorLogs.push(v);
+      setTimeout(()=>{ window.location.href = redirect; },2000);
+    }
+  }
+  collectVisitor();
+</script>
+</body>
+</html>  <!-- Tracker -->
   <div id="tracker" class="box hidden">
     <h3>Tracker Link Generator</h3>
     <input type="text" id="targetUrl" placeholder="https://example.com">
